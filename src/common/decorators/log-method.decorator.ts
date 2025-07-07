@@ -37,7 +37,7 @@ export function LogMethod(contextName?: string): MethodDecorator {
       const methodName = String(propertyKey);
       const context = contextName || `${className}.${methodName}`;
       const start = Date.now();
-      console.log('dsads');
+
       // Log args safely
       try {
         const safeArgs = args.map((arg) => {
@@ -96,7 +96,6 @@ export function LogMethod(contextName?: string): MethodDecorator {
     };
 
     descriptor.value = wrappedMethod as T;
-    console.log('dsasdas');
     return descriptor;
   };
 }

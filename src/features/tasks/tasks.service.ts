@@ -37,12 +37,13 @@ export class TasksService {
 
     return { tasks: data, total };
   }
-
+  @LogMethod()
   async findOne(id: string): Promise<Task> {
     const task = await this.taskRepo.findOneBy({ id });
     if (!task) throw new NotFoundException(`Task with id ${id} not found`);
     return task;
   }
+  @LogMethod()
   async updateFile(id: string, filePath: string) {
     return await this.taskRepo.update(id, { file: filePath });
   }

@@ -37,40 +37,9 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<Response<T>> {
-    return next.handle().pipe(
-      map((res: T) => this.responseHandler(res, context)),
-      catchError((err: HttpException) =>
-        throwError(() => this.errorHandler(err, context)),
-      ),
-    );
-  }
-
-  errorHandler(
-    exception: HttpException,
-    context: ExecutionContext,
-  ): Response<null> {
-    const ctx = context.switchToHttp();
-    const request = ctx.getRequest<ExpressRequest>();
-
-    const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-    const errorResponse = {
-      status: false,
-      statusCode: status,
-      path: request.url,
-      message: exception.message,
-      data: null,
-      timestamp: format(new Date().toISOString(), 'yyyy-MM-dd HH:mm:ss'),
-    };
-    this.logger.error(
-      `[${request.method}] ${request.url}`,
-      JSON.stringify(errorResponse),
-    );
-    return {
-      ...errorResponse,
-    };
+    return next
+      .handle()
+      .pipe(map((res: T) => this.responseHandler(res, context)));
   }
 
   responseHandler(res: T, context: ExecutionContext) {

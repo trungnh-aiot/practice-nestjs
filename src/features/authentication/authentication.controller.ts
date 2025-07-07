@@ -5,7 +5,14 @@ import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { compare } from 'bcrypt';
 import { LogMethod } from 'src/common/decorators/log-method.decorator';
-
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthenticationController {
   constructor(
@@ -13,6 +20,48 @@ export class AuthenticationController {
     private readonly authenticationService: AuthenticationService,
   ) {}
   @Post('register')
+  @ApiOperation({ summary: 'Register account' })
+  @ApiResponse({
+    status: 201,
+    description: 'Register account successfully',
+    schema: {
+      example: {
+        status: true,
+        path: '/auth/register',
+        message: 'success',
+        statusCode: 201,
+        data: {
+          email: 'hoaitrung22dk2a@gmail.com',
+          id: 2,
+        },
+        timestamp: '2025-07-07 22:46:48',
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Email Existed Or Confirm Password not match with Password',
+    schema: {
+      example: {
+        status: false,
+        statusCode: 400,
+        path: '/auth/register',
+        message: 'Bad Request Exception',
+        data: null,
+        errors: [
+          {
+            property: 'email',
+            message: 'hoaitrung22dk2a@gmail.com is taken, please try another',
+          },
+          {
+            property: 'passwordConfirmation',
+            message: 'passwordConfirmation should be equal to password.',
+          },
+        ],
+        timestamp: '2025-07-07 23:04:44',
+      },
+    },
+  })
+  @LogMethod()
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.findByEmail(createUserDto.email);
     if (user) {
@@ -22,6 +71,42 @@ export class AuthenticationController {
     return { email: createdUser.email, id: createdUser.id };
   }
   @Post('login')
+  @ApiOperation({ summary: 'Login' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successfully',
+    schema: {
+      example: {
+        status: true,
+        path: '/auth/login',
+        message: 'success',
+        statusCode: 201,
+        data: {
+          accessToken: 're',
+          refreshToken: 'ad',
+          user: {
+            id: 2,
+            email: 'hoaitrung22dk2a@gmail.com',
+          },
+        },
+        timestamp: '2025-07-07 23:17:34',
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Email or password is incorrect',
+    schema: {
+      example: {
+        status: false,
+        statusCode: 401,
+        path: '/auth/login',
+        message: 'Invalid email or password',
+        data: null,
+        errors: null,
+        timestamp: '2025-07-07 22:09:13',
+      },
+    },
+  })
   @LogMethod()
   async login(@Body() loginDto: LoginDto) {
     const { email, password } = loginDto;
