@@ -11,6 +11,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
 import { LoggerModule } from './common/logger/logger.module';
 import { JwtModule } from '@nestjs/jwt';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 @Module({
   imports: [
@@ -36,6 +37,10 @@ import { JwtModule } from '@nestjs/jwt';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggerInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseInterceptor,
     },
   ],
 })

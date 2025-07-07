@@ -9,7 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UnprocessableEntityException,
-  BadRequestException,
+  Req,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -18,7 +18,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerStorage } from './provider/multerStorage';
 import { FileValidationPipe } from './pipe/file-validation.pipe';
 import { LogMethod } from 'src/common/decorators/log-method.decorator';
-
+import { Express } from 'express';
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -41,11 +41,11 @@ export class TasksController {
   }
 
   @Post(':id/upload')
-  @LogMethod()
   @UseInterceptors(FileInterceptor('file', { storage: multerStorage }))
+  @LogMethod()
   async uploadFile(
     @Param('id', ParseUUIDPipe) taskId: string,
-    @UploadedFile(new FileValidationPipe()) file: Express.Multer.File,
+    @UploadedFile(FileValidationPipe) file: Express.Multer.File,
   ) {
     const task = await this.tasksService.findOne(taskId);
     if (!task) {

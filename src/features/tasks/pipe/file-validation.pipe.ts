@@ -3,14 +3,12 @@ import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
 export class FileValidationPipe implements PipeTransform {
-  constructor(
-    private readonly allowedMimeTypes: string[] = [
-      'image/jpeg',
-      'image/png',
-      'application/pdf',
-    ],
-    private readonly maxSize: number = 5 * 1024 * 1024, // 5MB
-  ) {}
+  private readonly allowedMimeTypes = [
+    'image/jpeg',
+    'image/png',
+    'application/pdf',
+  ];
+  private readonly maxSize = 5 * 1024 * 1024;
 
   transform(file: Express.Multer.File): Express.Multer.File {
     if (!file) {

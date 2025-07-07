@@ -18,7 +18,9 @@ export class TasksService {
     return await this.taskRepo.save(task);
   }
   @LogMethod()
-  async findAll(query: QueryTaskDto): Promise<{ data: Task[]; total: number }> {
+  async findAll(
+    query: QueryTaskDto,
+  ): Promise<{ tasks: Task[]; total: number }> {
     const page = parseInt(query.page || '1', 10);
     const limit = parseInt(query.limit || '10', 10);
     const skip = (page - 1) * limit;
@@ -33,7 +35,7 @@ export class TasksService {
       order: { createdAt: 'DESC' },
     });
 
-    return { data, total };
+    return { tasks: data, total };
   }
 
   async findOne(id: string): Promise<Task> {

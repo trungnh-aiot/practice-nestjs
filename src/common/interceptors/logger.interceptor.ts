@@ -18,13 +18,14 @@ export class LoggerInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest<ExpressRequest>();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { method, originalUrl, ip, body } = req;
+
     const start = Date.now();
-    const safeBody = omit(body, ['password', 'confirmPassword', 'token']);
+    const safeBody = omit(body, ['password', 'passwordConfirmation', 'token']);
+
     this.logger.log(
       `Incoming Request: ${method} ${originalUrl} from ${ip} body : ${JSON.stringify(safeBody)}`,
       'HTTP',
     );
-
     return next.handle().pipe(
       tap(() => {
         const duration = Date.now() - start;

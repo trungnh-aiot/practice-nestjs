@@ -4,8 +4,10 @@ import { AuthenticationController } from './authentication.controller';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 
+import { TasksModule } from '../tasks/tasks.module';
+
 @Module({
-  imports: [UserModule, JwtModule],
+  imports: [UserModule, JwtModule, TasksModule],
   controllers: [AuthenticationController],
   providers: [AuthenticationService],
 })

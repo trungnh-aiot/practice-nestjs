@@ -12,6 +12,14 @@ export function setGlobalLogger(logger: LoggerService) {
   }
 }
 
+function isSafeToLog(arg: unknown): boolean {
+  if (!arg || typeof arg !== 'object') return false;
+  if (arg instanceof Buffer) return false;
+  if (Array.isArray(arg)) return arg.every(isSafeToLog);
+  const unsafeKeys = ['pipe', 'stream', 'mimetype', 'originalname', 'headers'];
+  return !unsafeKeys.some((key) => key in (arg as any));
+}
+
 export function LogMethod(contextName?: string): MethodDecorator {
   return <T>(
     target: object,
@@ -25,28 +33,32 @@ export function LogMethod(contextName?: string): MethodDecorator {
     }
 
     const wrappedMethod = function (this: unknown, ...args: unknown[]) {
-      const className =
-        (target as unknown)?.constructor?.name ?? 'UnknownClass';
+      const className = (target as any)?.constructor?.name ?? 'UnknownClass';
       const methodName = String(propertyKey);
       const context = contextName || `${className}.${methodName}`;
-
-      if (!globalLogger) {
-        console.warn(`[WARN] No global logger set for @LogMethod(${context})`);
+      const start = Date.now();
+      console.log('dsads');
+      // Log args safely
+      try {
+        const safeArgs = args.map((arg) => {
+          if (isSafeToLog(arg)) {
+            return omit(arg as Record<string, unknown>, [
+              'password',
+              'passwordConfirmation',
+              'token',
+            ]);
+          }
+          return '[Non-loggable param]';
+        });
+        globalLogger?.log(
+          `[START] ${context} args: ${JSON.stringify(safeArgs)}`,
+          context,
+        );
+      } catch (err) {
+        globalLogger?.warn(`[WARN] Failed to log args for ${context}`, context);
       }
 
-      const argsStr = args.map((a) =>
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        typeof a === 'object' ? JSON.stringify(a) : String(a),
-      );
-      globalLogger?.log(
-        `[START] ${context} called with args: [${JSON.stringify(omit(JSON.parse(argsStr.join(', ')), ['password', 'confirmPassword', 'token']))}]`,
-        context,
-      );
-
-      const start = Date.now();
-
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const result = originalMethod.apply(this, args);
 
         if (result instanceof Promise) {
@@ -56,7 +68,6 @@ export function LogMethod(contextName?: string): MethodDecorator {
                 `[SUCCESS] ${context} completed in ${Date.now() - start}ms`,
                 context,
               );
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
               return res;
             })
             .catch((err: unknown) => {
@@ -72,7 +83,6 @@ export function LogMethod(contextName?: string): MethodDecorator {
             `[SUCCESS] ${context} completed in ${Date.now() - start}ms`,
             context,
           );
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return result;
         }
       } catch (err: unknown) {
@@ -86,6 +96,7 @@ export function LogMethod(contextName?: string): MethodDecorator {
     };
 
     descriptor.value = wrappedMethod as T;
+    console.log('dsasdas');
     return descriptor;
   };
 }

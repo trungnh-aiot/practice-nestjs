@@ -13,13 +13,13 @@ export class AuthenticationController {
     private readonly authenticationService: AuthenticationService,
   ) {}
   @Post('register')
-  @LogMethod()
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.findByEmail(createUserDto.email);
     if (user) {
       throw new Error('Email already exists');
     }
-    return this.userService.create(createUserDto);
+    const createdUser = await this.userService.create(createUserDto);
+    return { email: createdUser.email, id: createdUser.id };
   }
   @Post('login')
   @LogMethod()
