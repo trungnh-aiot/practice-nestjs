@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { QueryTaskDto } from './dto/query-task.dto';
+import { LogMethod } from 'src/common/decorators/log-method.decorator';
 
 @Injectable()
 export class TasksService {
@@ -11,12 +12,12 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepo: Repository<Task>,
   ) {}
-
+  @LogMethod()
   async create(dto: CreateTaskDto): Promise<Task> {
     const task = this.taskRepo.create(dto);
     return await this.taskRepo.save(task);
   }
-
+  @LogMethod()
   async findAll(query: QueryTaskDto): Promise<{ data: Task[]; total: number }> {
     const page = parseInt(query.page || '1', 10);
     const limit = parseInt(query.limit || '10', 10);

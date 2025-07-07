@@ -4,6 +4,7 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { compare } from 'bcrypt';
+import { LogMethod } from 'src/common/decorators/log-method.decorator';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -12,6 +13,7 @@ export class AuthenticationController {
     private readonly authenticationService: AuthenticationService,
   ) {}
   @Post('register')
+  @LogMethod()
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.findByEmail(createUserDto.email);
     if (user) {
@@ -20,6 +22,7 @@ export class AuthenticationController {
     return this.userService.create(createUserDto);
   }
   @Post('login')
+  @LogMethod()
   async login(@Body() loginDto: LoginDto) {
     const { email, password } = loginDto;
     const user = await this.userService.findByEmail(email);

@@ -21,6 +21,6 @@ export class Task {
 
   @CreateDateColumn()
   createdAt: Date;
-  @Column()
-  file: string;
+  @Column({ nullable: true })
+  file?: string;
 }

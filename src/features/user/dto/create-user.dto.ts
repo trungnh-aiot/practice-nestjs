@@ -19,5 +19,5 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @Validate(PasswordConfirmValidator, ['password'])
-  password_confirmation: string;
+  passwordConfirmation: string;
 }

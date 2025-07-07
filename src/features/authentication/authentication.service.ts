@@ -16,10 +16,24 @@ export class AuthenticationService {
     };
     return {
       accessToken: this.jwtService.sign(payload, {
-        expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN', '1h'),
+        secret: this.configService.get<string>(
+          'ACCESS_TOKEN_SECRET',
+          'access_token',
+        ),
+        expiresIn: this.configService.get<string>(
+          'ACCESS_TOKEN_EXPIRES_IN',
+          '1h',
+        ),
       }),
       refreshToken: this.jwtService.sign(payload, {
-        expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN', '7d'),
+        secret: this.configService.get<string>(
+          'REFRESH_TOKEN_SECRET',
+          'access_token',
+        ),
+        expiresIn: this.configService.get<string>(
+          'REFRESH_TOKEN_EXPIRES_IN',
+          '7d',
+        ),
       }),
     };
   }
