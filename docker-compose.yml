@@ -1,0 +1,11 @@
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: nest
+      MYSQL_PASSWORD: nestpass
+    ports:
+      - '3307:3306'
