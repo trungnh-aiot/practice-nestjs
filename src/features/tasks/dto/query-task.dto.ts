@@ -1,15 +1,21 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsIn, IsNumberString } from 'class-validator';
+import { IsOptional, IsIn, IsNumberString, IsEnum } from 'class-validator';
+
+export enum TaskStatus {
+  PENDING = 'pending',
+  IN_PROGRESS = 'in-progress',
+  DONE = 'done',
+}
 
 export class QueryTaskDto {
-    @ApiPropertyOptional({
+  @ApiPropertyOptional({
     description: 'Search keyword for task title',
-    enum: ['pending', 'in-progress', 'done'],
-    example: 'in-progress',
+    enum: TaskStatus,
+    example: TaskStatus.IN_PROGRESS,
   })
   @IsOptional()
-  @IsIn(['pending', 'in-progress', 'done'])
-  status?: string;
+  @IsEnum(TaskStatus)
+  status?: TaskStatus;
   @ApiPropertyOptional({
     description: 'Page (pagination)',
     example: '1',

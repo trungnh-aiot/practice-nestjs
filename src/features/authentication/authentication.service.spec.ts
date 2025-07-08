@@ -1,18 +1,44 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationService } from './authentication.service';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../user/entities/user.entity';
+import { configuration } from 'src/configs/configuration';
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;
+  let jwtService: Partial<JwtService>;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthenticationService],
-    }).compile();
+  beforeEach(() => {
+    jwtService = {
+      sign: jest.fn().mockReturnValue('mockedToken'),
+    };
 
-    service = module.get<AuthenticationService>(AuthenticationService);
+    service = new AuthenticationService(jwtService as JwtService);
   });
-
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+  it('should generate access and refresh tokens with correct secrets and payloads', async () => {
+    const mockUser: User = {
+      id: 1,
+      email: 'test@example.com',
+      hashPassword: 'hashed',
+    };
+
+    const result = await service.generateToken(mockUser);
+
+    expect(jwtService.sign).toHaveBeenCalledTimes(2);
+
+    expect(jwtService.sign).toHaveBeenCalledWith(
+      { email: mockUser.email, sub: mockUser.id },
+      {
+        secret: configuration.authentication.accessTokenSecret,
+        expiresIn: configuration.authentication.accessTokenExpiresIn,
+      },
+    );
+
+    expect(result).toEqual({
+      accessToken: 'mockedToken',
+      refreshToken: 'mockedToken',
+    });
   });
 });

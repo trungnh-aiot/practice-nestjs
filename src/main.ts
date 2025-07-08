@@ -6,6 +6,7 @@ import { setGlobalLogger } from './common/decorators/log-method.decorator';
 import { useContainer, ValidationError } from 'class-validator';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { configuration } from './configs/configuration';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,7 +27,7 @@ async function bootstrap() {
     }),
   );
   const config = new DocumentBuilder()
-    .setTitle('practice project')
+    .setTitle(configuration.app.name)
     .setDescription('The practice project API description')
     .setVersion('1.0')
     .addTag('practice')
@@ -34,6 +35,6 @@ async function bootstrap() {
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(configuration.app.port ?? 3001);
 }
 bootstrap();

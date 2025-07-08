@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user/entities/user.entity';
-import { ConfigService } from '@nestjs/config';
+import { configuration } from 'src/configs/configuration';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly jwtService: JwtService) {}
   async generateToken(user: User) {
     const payload = {
       email: user.email,
@@ -16,24 +13,12 @@ export class AuthenticationService {
     };
     return {
       accessToken: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>(
-          'ACCESS_TOKEN_SECRET',
-          'access_token',
-        ),
-        expiresIn: this.configService.get<string>(
-          'ACCESS_TOKEN_EXPIRES_IN',
-          '1h',
-        ),
+        secret: configuration.authentication.accessTokenSecret,
+        expiresIn: configuration.authentication.accessTokenExpiresIn,
       }),
       refreshToken: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>(
-          'REFRESH_TOKEN_SECRET',
-          'access_token',
-        ),
-        expiresIn: this.configService.get<string>(
-          'REFRESH_TOKEN_EXPIRES_IN',
-          '7d',
-        ),
+        secret: configuration.authentication.refreshTokenSecret,
+        expiresIn: configuration.authentication.refreshTokenExpiresIn,
       }),
     };
   }

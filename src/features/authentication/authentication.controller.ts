@@ -1,4 +1,10 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
@@ -12,6 +18,8 @@ import {
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { ERROR_RESPONSE_MESSAGES } from 'src/common/constants/response-messages.constant';
+import { Public } from './decorators/public.decorator';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthenticationController {
@@ -20,6 +28,7 @@ export class AuthenticationController {
     private readonly authenticationService: AuthenticationService,
   ) {}
   @Post('register')
+  @Public()
   @ApiOperation({ summary: 'Register account' })
   @ApiResponse({
     status: 201,
@@ -65,12 +74,15 @@ export class AuthenticationController {
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.findByEmail(createUserDto.email);
     if (user) {
-      throw new Error('Email already exists');
+      throw new ConflictException(
+        ERROR_RESPONSE_MESSAGES.AUTHENTICATION.EXISTED_EMAIL,
+      );
     }
     const createdUser = await this.userService.create(createUserDto);
     return { email: createdUser.email, id: createdUser.id };
   }
   @Post('login')
+  @Public()
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({
     status: 200,
@@ -100,7 +112,8 @@ export class AuthenticationController {
         status: false,
         statusCode: 401,
         path: '/auth/login',
-        message: 'Invalid email or password',
+        message:
+          ERROR_RESPONSE_MESSAGES.AUTHENTICATION.INVALID_EMAIL_OR_PASSWORD,
         data: null,
         errors: null,
         timestamp: '2025-07-07 22:09:13',
@@ -112,11 +125,15 @@ export class AuthenticationController {
     const { email, password } = loginDto;
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(
+        ERROR_RESPONSE_MESSAGES.AUTHENTICATION.INVALID_EMAIL_OR_PASSWORD,
+      );
     }
     const isValidPassword: boolean = await compare(password, user.hashPassword);
     if (!isValidPassword) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException(
+        ERROR_RESPONSE_MESSAGES.AUTHENTICATION.INVALID_EMAIL_OR_PASSWORD,
+      );
     }
     const tokens = await this.authenticationService.generateToken(user);
     return {

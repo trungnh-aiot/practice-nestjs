@@ -4,15 +4,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
 import { LogMethod } from 'src/common/decorators/log-method.decorator';
+import { configuration } from 'src/configs/configuration';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private readonly configService: ConfigService,
   ) {}
   @LogMethod()
   async create(createUserDto: CreateUserDto) {
@@ -20,7 +19,7 @@ export class UserService {
       email: createUserDto.email,
       hashPassword: await bcrypt.hash(
         createUserDto.password,
-        Number.parseInt(this.configService.get<string>('SALT_ROUNDS') || '10'),
+        configuration.authentication.saltRounds,
       ),
     });
   }
