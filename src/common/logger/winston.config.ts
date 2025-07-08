@@ -1,32 +1,40 @@
 import { format, LoggerOptions, transports } from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 export const winstonConfig: LoggerOptions = {
   level: 'info',
+  format: format.combine(
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    format.errors({ stack: true }), // log stack trace nếu có
+    format.splat(),
+    format.json(),
+  ),
   transports: [
-    new transports.File({
-      filename: `logs/error.log`,
+    new DailyRotateFile({
       level: 'error',
-      format: format.combine(format.timestamp(), format.json()),
+      dirname: 'logs',
+      filename: 'error-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: false,
+      maxSize: '20m',
+      maxFiles: '14d',
     }),
-    new transports.File({
-      filename: `logs/combined.log`,
-      format: format.combine(format.timestamp(), format.json()),
+
+    new DailyRotateFile({
+      dirname: 'logs',
+      filename: 'combined-%DATE%.log',
+      datePattern: 'YYYY-MM-DD',
+      zippedArchive: false,
+      maxSize: '20m',
+      maxFiles: '14d',
     }),
+
     new transports.Console({
       format: format.combine(
-        format.timestamp(),
+        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         format.cli(),
-        format.splat(),
-        format.printf((info) => {
-          const level = typeof info.level === 'string' ? info.level : 'UNKNOWN';
-          const message =
-            typeof info.message === 'string'
-              ? info.message
-              : JSON.stringify(info.message);
-          const timestamp =
-            typeof info.timestamp === 'string' ? info.timestamp : '';
-
-          return `${timestamp} ${level}: ${message}`;
+        format.printf(({ timestamp, level, message }) => {
+          return `${timestamp} ${level}: ${typeof message === 'string' ? message : JSON.stringify(message)}`;
         }),
       ),
     }),
