@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
 describe('UserController', () => {
   let controller: UserController;
-  let userService: jest.Mocked<Partial<UserService>>;
+
   beforeEach(async () => {
     const mockUserService = {
       create: jest.fn(),

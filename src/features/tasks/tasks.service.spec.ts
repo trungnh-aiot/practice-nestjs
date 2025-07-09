@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TasksService } from './tasks.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Task } from './entities/task.entity';
-import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateTaskDto } from './dto/create-task.dto';
 import { QueryTaskDto, TaskStatus } from './dto/query-task.dto';
+import { Task } from './entities/task.entity';
+import { TasksService } from './tasks.service';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -74,7 +75,16 @@ describe('TasksService', () => {
         take: 2,
         order: { createdAt: 'DESC' },
       });
-      expect(result).toEqual({ tasks: [mockTask], total: 1 });
+      expect(result).toEqual({
+        tasks: [mockTask],
+        meta: {
+          currentPage: 1,
+          itemCount: 1,
+          itemsPerPage: 2,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      });
     });
 
     it('should work with default pagination', async () => {

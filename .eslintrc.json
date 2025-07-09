@@ -1,7 +1,19 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
-
-  "rules": {
-    "@next/next/no-html-link-for-pages": "off"
-  }
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"],
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "eslint-plugin-import"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {}
 }

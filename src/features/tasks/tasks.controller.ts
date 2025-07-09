@@ -1,24 +1,17 @@
 import {
-  Controller,
-  Post,
   Body,
+  Controller,
   Get,
   Param,
-  Query,
   ParseUUIDPipe,
-  UseInterceptors,
-  UploadedFile,
-  UnprocessableEntityException,
+  Post,
+  Query,
   Req,
+  UnprocessableEntityException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { QueryTaskDto } from './dto/query-task.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerStorage } from './provider/multer-storage';
-import { FileValidationPipe } from './pipe/file-validation.pipe';
-import { LogMethod } from 'src/common/decorators/log-method.decorator';
-import { Express } from 'express';
 import {
   ApiBadRequestResponse,
   ApiConsumes,
@@ -28,11 +21,20 @@ import {
   ApiQuery,
   ApiResponse,
 } from '@nestjs/swagger';
+import { Express } from 'express';
+import { basename } from 'path';
 import {
   ERROR_RESPONSE_MESSAGES,
   SUCCESS_RESPONSE_MESSAGES,
 } from 'src/common/constants/response-messages.constant';
-import { basename } from 'path';
+import { LogMethod } from 'src/common/decorators/log-method.decorator';
+
+import { CreateTaskDto } from './dto/create-task.dto';
+import { QueryTaskDto } from './dto/query-task.dto';
+import { FileValidationPipe } from './pipe/file-validation.pipe';
+import { multerStorage } from './provider/multer-storage';
+import { TasksService } from './tasks.service';
+
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}

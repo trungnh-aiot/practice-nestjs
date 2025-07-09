@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsIn, IsNumberString, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
 
 export enum TaskStatus {
   PENDING = 'pending',
@@ -15,6 +16,7 @@ export class QueryTaskDto {
   })
   @IsOptional()
   @IsEnum(TaskStatus)
+  @Type(() => String)
   status?: TaskStatus;
   @ApiPropertyOptional({
     description: 'Page (pagination)',
@@ -22,6 +24,7 @@ export class QueryTaskDto {
   })
   @IsOptional()
   @IsNumberString()
+  @Type(() => String)
   page?: string;
   @ApiPropertyOptional({
     description: 'The number tasks of one page(pagination)',
@@ -29,5 +32,6 @@ export class QueryTaskDto {
   })
   @IsOptional()
   @IsNumberString()
+  @Type(() => String)
   limit?: string;
 }

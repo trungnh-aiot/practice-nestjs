@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LogMethod } from 'src/common/decorators/log-method.decorator';
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { Task } from './entities/task.entity';
+
 import { CreateTaskDto } from './dto/create-task.dto';
 import { QueryTaskDto } from './dto/query-task.dto';
-import { LogMethod } from 'src/common/decorators/log-method.decorator';
+import { Task } from './entities/task.entity';
 
 @Injectable()
 export class TasksService {
@@ -15,12 +16,20 @@ export class TasksService {
   @LogMethod()
   async create(dto: CreateTaskDto): Promise<Task> {
     const task = this.taskRepo.create(dto);
+
     return await this.taskRepo.save(task);
   }
   @LogMethod()
-  async findAll(
-    query: QueryTaskDto,
-  ): Promise<{ tasks: Task[]; total: number }> {
+  async findAll(query: QueryTaskDto): Promise<{
+    tasks: Task[];
+    meta: {
+      totalItems: number;
+      itemCount: number;
+      itemsPerPage: number;
+      totalPages: number;
+      currentPage: number;
+    };
+  }> {
     const page = parseInt(query.page || '1', 10);
     const limit = parseInt(query.limit || '10', 10);
     const skip = (page - 1) * limit;
@@ -35,7 +44,16 @@ export class TasksService {
       order: { createdAt: 'DESC' },
     });
 
-    return { tasks: data, total };
+    return {
+      tasks: data,
+      meta: {
+        totalItems: total,
+        itemsPerPage: limit,
+        itemCount: data.length,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+      },
+    };
   }
   @LogMethod()
   async findOne(id: string): Promise<Task> {

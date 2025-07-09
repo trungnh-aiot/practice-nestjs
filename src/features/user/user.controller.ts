@@ -1,8 +1,8 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-
+import { Body, Controller, Post } from '@nestjs/common';
 import { LogMethod } from 'src/common/decorators/log-method.decorator';
+
+import { CreateUserDto } from './dto/create-user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {

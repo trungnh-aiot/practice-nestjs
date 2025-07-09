@@ -1,11 +1,11 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { LoggerService } from './common/logger/logger.service';
-import { setGlobalLogger } from './common/decorators/log-method.decorator';
-
-import { useContainer, ValidationError } from 'class-validator';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
+
+import { AppModule } from './app.module';
+import { setGlobalLogger } from './common/decorators/log-method.decorator';
+import { LoggerService } from './common/logger/logger.service';
 import { configuration } from './configs/configuration';
 
 async function bootstrap() {
@@ -16,6 +16,9 @@ async function bootstrap() {
   setGlobalLogger(logger);
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
       exceptionFactory: (errors) => {
         const result = errors.map((error) => ({
           property: error.property,

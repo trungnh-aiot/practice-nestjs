@@ -1,25 +1,27 @@
 import {
+  Body,
+  ConflictException,
   Controller,
   Post,
-  Body,
   UnauthorizedException,
-  ConflictException,
 } from '@nestjs/common';
-import { AuthenticationService } from './authentication.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { UserService } from '../user/user.service';
-import { LoginDto } from './dto/login.dto';
-import { compare } from 'bcrypt';
-import { LogMethod } from 'src/common/decorators/log-method.decorator';
 import {
-  ApiTags,
+  ApiBadRequestResponse,
   ApiOperation,
   ApiResponse,
-  ApiBadRequestResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { compare } from 'bcrypt';
 import { ERROR_RESPONSE_MESSAGES } from 'src/common/constants/response-messages.constant';
+import { LogMethod } from 'src/common/decorators/log-method.decorator';
+
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UserService } from '../user/user.service';
+import { AuthenticationService } from './authentication.service';
 import { Public } from './decorators/public.decorator';
+import { LoginDto } from './dto/login.dto';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthenticationController {
@@ -81,6 +83,7 @@ export class AuthenticationController {
     const createdUser = await this.userService.create(createUserDto);
     return { email: createdUser.email, id: createdUser.id };
   }
+
   @Post('login')
   @Public()
   @ApiOperation({ summary: 'Login' })

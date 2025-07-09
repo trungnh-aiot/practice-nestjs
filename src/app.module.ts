@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
-
-import { AuthenticationModule } from './features/authentication/authentication.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './features/user/user.module';
-import { User } from './features/user/entities/user.entity';
-import { TasksModule } from './features/tasks/tasks.module';
-import { Task } from './features/tasks/entities/task.entity';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
-import { LoggerModule } from './common/logger/logger.module';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { BadRequestExceptionFilter } from './common/filters/bad-request-exception.filter';
 import { HttpExceptionFilter } from './common/filters/http-request-exception.filter';
+import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { LoggerModule } from './common/logger/logger.module';
 import { configuration } from './configs/configuration';
 import { validate } from './configs/environment-variables.config';
+import { AuthenticationModule } from './features/authentication/authentication.module';
 import { JwtGuard } from './features/authentication/guards/jwt.guard';
+import { Task } from './features/tasks/entities/task.entity';
+import { TasksModule } from './features/tasks/tasks.module';
+import { User } from './features/user/entities/user.entity';
+import { UserModule } from './features/user/user.module';
 
 @Module({
   imports: [

@@ -1,13 +1,14 @@
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import * as bcrypt from 'bcrypt';
+import { ERROR_RESPONSE_MESSAGES } from 'src/common/constants/response-messages.constant';
+
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
-import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { ERROR_RESPONSE_MESSAGES } from 'src/common/constants/response-messages.constant';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
-import { User } from '../user/entities/user.entity';
 
 jest.mock('bcrypt', () => ({
   compare: jest.fn(),

@@ -1,7 +1,8 @@
-import { AuthenticationService } from './authentication.service';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
 import { configuration } from 'src/configs/configuration';
+
+import { User } from '../user/entities/user.entity';
+import { AuthenticationService } from './authentication.service';
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;

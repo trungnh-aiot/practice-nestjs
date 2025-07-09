@@ -1,10 +1,11 @@
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TasksController } from './tasks.controller';
-import { TasksService } from './tasks.service';
+
 import { CreateTaskDto } from './dto/create-task.dto';
 import { QueryTaskDto, TaskStatus } from './dto/query-task.dto';
-import { UnprocessableEntityException } from '@nestjs/common';
 import { Task } from './entities/task.entity';
+import { TasksController } from './tasks.controller';
+import { TasksService } from './tasks.service';
 
 describe('TasksController', () => {
   let controller: TasksController;
